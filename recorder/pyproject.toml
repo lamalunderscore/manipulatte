@@ -1,0 +1,13 @@
+[tool.poetry]
+name = "recorder"
+version = "0.1.0"
+description = "Package to implement different recorders."
+packages = [{include = "recorder"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+torch = "^2.6.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "jamba"
+version = "0.1.0"
+description = "Jamba language model implementation with HuggingFace transformers integration"
+packages = [{include = "jamba"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+transformers = "^4.52.2"
+torch = "^2.6.0"
+numpy = "^1.21"
+einops = "^0.7.0"
+recorder = "^0.1.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

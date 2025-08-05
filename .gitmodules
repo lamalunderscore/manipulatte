@@ -1,0 +1,4 @@
+[submodule "recurrentgemma"]
+	path = recurrentgemma
+	url = https://github.com/lamalunderscore/recurrentgemma.git
+	branch = dejavu
