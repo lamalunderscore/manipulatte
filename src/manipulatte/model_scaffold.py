@@ -14,9 +14,13 @@ from accelerate import (
     load_checkpoint_and_dispatch,
 )
 from accelerate.utils import get_balanced_memory
-from transformers import AutoTokenizer, JambaForCausalLM
+from transformers import AutoTokenizer
 
+from jamba import JambaForCausalLM
 from recorder import TensorRecorder
+from recurrentgemma.common import GriffinConfig, Preset
+from recurrentgemma.torch.griffin import Griffin
+from recurrentgemma.torch.sampler import Sampler
 
 
 class Model(ABC):
@@ -332,7 +336,7 @@ class Huggingface(Model):
         ]
         return out_data
 
-    def load_model(self, model_id):
+    def load_model(self, model_id: str):
         try:
             model_cls, no_split_module_classes, kwargs = ALL_HUGGINGFACE_IMPLEMENTED[model_id]
         except KeyError:
@@ -361,7 +365,10 @@ class Huggingface(Model):
                 dtype=kwargs.get("torch_dtype"),  # type: ignore
             )
 
-            if torch.cuda.device_count() == 8:
+            # huggingface accelerate has difficulties mapping gpus in a balanced way.
+            # manual allocation of layers to devices for 8 gpus.
+            # only for jamba model (only hf model used with this library for now)
+            if torch.cuda.device_count() == 8 and "jamba" in model_id.lower():
                 device_map = OrderedDict(
                     [
                         ("model.embed_tokens", 0),
@@ -404,7 +411,6 @@ class Huggingface(Model):
             print(f"device map: {device_map}")
 
             del model
-            # raise NotImplementedError("Stop script.")
 
         # Load actual model with device map
         model = model_cls.from_pretrained(model_id, device_map=device_map, **kwargs)  # type: ignore
